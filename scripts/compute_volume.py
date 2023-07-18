@@ -65,9 +65,9 @@ for dbase in dir_base:
 
                 # Raster zonal statistic
                 if dbase.endswith('BORDER'):
-                    dod_vol_path = f'{dir_stat}/{place}/{place}_{date}_volume.csv'
+                    dod_vol_path = f'{dir_stat}/{place}/{place}_{date}_volume_clean.csv'
                 else:
-                    dod_vol_path = f'{dir_stat}/{place}/{place}_{date}_volume_cleaned.csv'
+                    dod_vol_path = f'{dir_stat}/{place}/{place}_{date}_volume_unclean.csv'
 
                 print(f"Output path : {dod_vol_path}")
 
@@ -124,12 +124,11 @@ for dbase in dir_base:
     for site in places:
         df = df_vol_all.loc[df_vol_all['site'] == site]
         if dbase.endswith('BORDER'):
-            df.to_csv(f'{dir_stat}/volume_{site}.csv', index=False)
+            df.to_csv(f'{dir_stat}/volume_{site}_clean.csv', index=False)
         else:
-            df.to_csv(f'{dir_stat}/volume_{site}_cleaned.csv', index=False)
+            df.to_csv(f'{dir_stat}/volume_{site}_unclean.csv', index=False)
 
 end_time = time.time()
 execution_time = end_time - start_time
 
 print(f"Execution time: {execution_time} seconds")
-
