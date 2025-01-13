@@ -1,17 +1,3 @@
-# ===============================================
-# COMPUTE VOLUME FROM DODs
-# ===============================================
-
-"""
-Le script découpe les DODs de chaque site un à un (e.g. 2015-2016) puis calcule les volumes (total, positif et négatif).
-On précise quels années on veut analyser dans les paramètres du scripts
-
-Un filtre de 20 cm est appliqué pour retirer le "bruit" ; seul les valeurs
-supérieur à 20 cm ou -20 cm sont conservées.
-
-Ronan avait mis un seuil à 10 cm (Autret et al, 2019)
-"""
-
 from qgis.PyQt.QtCore import (QCoreApplication, QVariant)
 from qgis.analysis import QgsRasterCalculatorEntry, QgsRasterCalculator
 from qgis.core import *
@@ -23,32 +9,37 @@ import pandas as pd
 import glob
 import time
 
-# ===============================================
+# ==============================================================================
 # PARAMETRES
-# ===============================================
+# ==============================================================================
 
 # INPUT
-# Dossier des DODs
-dir_dod = 'path'
-dir_dod_w = 'path'
-dir_base = [dir_dod, dir_dod_w]
+# Dir order effect
+dir_dod_clean = 'path'
+# dir_dod_unclean = 'path'
 
-# Définir les années qui vont être utilisées pour créer les DODs (on fera current_year - last_year)
-places = ['Reykjanesta', 'Kerling', 'Selatangar']
+dirs_base = [dir_dod_clean] # a list if you want to pass multiple dir
+
+# Threshol (m)
+threshold = 0.125
+
+# a list of site name, they have to exactly correspond to the name of folders
+places = ['Katlahraun', 'Kerling', 'Selatangar', 'Reykjanesta']
 
 # OUTPUT
 # Dossier de destination des DODs
 dir_stat = "path"
 
-# ===============================================
+# ==============================================================================
 # PROCESS
-# ===============================================
+# ==============================================================================
 
 # Initialize time counter
 start_time = time.time()
 
 # Find DOD
-for dbase in dir_base:
+for dbase in dir_dod_clean:
+    # Get all .tif in dbase
     files = glob.glob(f"{dbase}/**/*.tif")
     # print(files)
     dict_vol = {}
@@ -91,8 +82,9 @@ for dbase in dir_base:
                 # Compute global statistics
                 dod_vol = pd.read_csv(dod_vol_path)
 
-                # Filter values (> 0.15 or < -0.15)
-                dod_vol = dod_vol.loc[(dod_vol['zone'] > 0.125) | (dod_vol['zone'] < -0.125)]
+                # Filter by threshold
+                dod_vol = dod_vol.loc[(dod_vol['zone'] > threshold) |
+                                      (dod_vol['zone'] < (threshold - (threshold*2)))]
                 dod_vol['vol'] = dod_vol['sum'] * dod_vol['m2']
 
                 dod_vol.to_csv(dod_vol_path, index=False)
