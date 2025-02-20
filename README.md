@@ -24,12 +24,8 @@ dir_dod_clean
     │   └── Kerling_2022_2023_DOD_mask_cordon.tif
 ```
 
-Un filtre de 12.5 cm est appliqué pour retirer le "bruit" ; seules les valeurs
-supérieures à 12.5 cm ou -12.5 cm sont conservées. On peut, bien sûr, modifier
-ce seuil.
-
 ## Exécution
 
 On lance le scipt dans la console Python de QGIS. Ne pas oublier de changer les
-chemins et d'installer le modules.
+chemins et d'installer `pandas` et `glob`.
 
